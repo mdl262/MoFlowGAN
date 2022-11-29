@@ -24,6 +24,8 @@ from mflow.generate import generate_mols
 import functools
 print = functools.partial(print, flush=True)
 
+import reward_loss as rl # for combined loss function for validity, uniqueness, etc.
+
  
 def get_parser():
     parser = argparse.ArgumentParser()
@@ -407,11 +409,11 @@ def train():
                 ## reward loss calculation step                    
                 # real batch 
                 pred_rewards_real, _ = rew(adj_onehot, None, x_onehot, activation = nn.Sigmoid())
-                rewards_real = -1 # TODO, get reward performance scores on real data using max's stuff
+                rewards_real = rl.reward_loss(adj_onehot,x_onehot)# TODO, get reward performance scores on real data using max's stuff
             
                 # get fake batch predicted rewards
                 pred_rewards_fake, _ = rew(e_hat, None, n_hat, activation = nn.Sigmoid())
-                rewards_fake = -1 # TODO get reward performance scores on fake data using max's stuff
+                rewards_fake = rl.reward_loss(edges,nodes) # TODO get reward performance scores on fake data using max's stuff
                            # reward score must be 0 if molecule is not valid
 
                 # compute reward regression losses + objective
